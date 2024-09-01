@@ -5,13 +5,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @ToString
-//@NoArgsConstructor
+@NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Getter
 public class Member {
     @Id
     @GeneratedValue
@@ -22,5 +24,7 @@ public class Member {
 
     @Column
     private String email;
+
+
 
 }
