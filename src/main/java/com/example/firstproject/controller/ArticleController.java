@@ -39,6 +39,7 @@ public class ArticleController {
         return "redirect:/articles/"+saved.getId();
     }
 
+    //상세보기
     @GetMapping("/articles/{id}")
     public String show(@PathVariable Long id, Model model){
         log.info("id = " + id);
@@ -50,6 +51,7 @@ public class ArticleController {
         return "articles/show";
     }
 
+    //목록보기
     @GetMapping("/articles")
     public String index(Model model){
 
@@ -59,5 +61,15 @@ public class ArticleController {
             model.addAttribute("articleList", articleEntityList);
 //        3)사용자에게 보여 줄 뷰 페이지 설정하기
         return "articles/index";
+    }
+
+    @GetMapping("/articles/{id}/edit")
+    public String edit(@PathVariable Long id, Model model){
+        //1.  수정할 데이터 가져오기
+        Article articleEntity = articleRepository.findById(id).orElse(null);
+        //2.모델에 넣기
+        model.addAttribute("article", articleEntity);
+        //3. 뷰 페이지 설정
+        return "articles/edit";
     }
 }
