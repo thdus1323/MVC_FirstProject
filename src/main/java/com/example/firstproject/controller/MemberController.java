@@ -3,6 +3,7 @@ package com.example.firstproject.controller;
 import com.example.firstproject.dto.MemberDTO;
 import com.example.firstproject.entity.Member;
 import com.example.firstproject.repository.MemberRepository;
+import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -59,5 +60,32 @@ public class MemberController {
         //모델로 변환
         model.addAttribute("member", member);
         return "members/detail";
+    }
+
+    //수정하기폼
+    @GetMapping("/members/{id}/update")
+    public String update(@PathVariable Long id, Model model){
+        //수정할 데이터 가져오기
+        Member member = memberRepository.findById(id).orElse(null);
+        //모델에 넣기
+        model.addAttribute("member", member);
+        return "members/update";
+    }
+
+    //수정하기
+    @PostMapping("/members/edit")
+    public String update(MemberDTO memberDTO){
+        log.info(memberDTO.toString());
+        //디티오에서 엔티티 변환
+        Member member = memberDTO.toEntity();
+        log.info(member.toString());
+        //엔티티를 db에 저장
+        //db에서 기존 데이터 가져오기
+        Member origin = memberRepository.findById(member.getId()).orElse(null);
+        //기존 데이터 값 갱신하기
+        if (origin != null){
+            memberRepository.save(member);
+        }
+        return "redirect:/members/" + member.getId();
     }
 }
