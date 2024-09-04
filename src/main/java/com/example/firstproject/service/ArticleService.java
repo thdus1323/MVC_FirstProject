@@ -5,9 +5,15 @@ import com.example.firstproject.entity.Article;
 import com.example.firstproject.repository.ArticleRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.hibernate.query.sqm.tree.SqmNode.log;
 
@@ -25,6 +31,7 @@ public class ArticleService {
         return articleRepository.findById(id).orElse(null);
     }
 
+    //post
     public Article create(ArticleDTO articleDTO) {
         Article article = articleDTO.toEntity(); // 엔티티로 변환후 article에 저장
         if (article.getId() != null){
@@ -61,5 +68,23 @@ public class ArticleService {
         //대상 삭제하기
         articleRepository.delete(target);
         return target;
+    }
+
+
+    @Transactional
+    public List<Article> createArticles(List<ArticleDTO> articleDTOS) {
+        //1. dto 묶음을 엔티티 묶음으로 변환하기_스트림문법
+        List<Article> articleList = articleDTOS.stream()
+                .map(articleDTO -> articleDTO.toEntity())
+                .collect(Collectors.toList());
+
+        //엔티티 묶음을 db에 저장하기
+        articleList.stream()
+                .forEach(article -> articleRepository.save(article));
+        //강제로 에러 발생시키기
+        articleRepository.findById(-1L)
+                .orElseThrow(()-> new IllegalArgumentException("결제 실패"));
+        //결과 값 반환하기
+        return articleList;
     }
 }
